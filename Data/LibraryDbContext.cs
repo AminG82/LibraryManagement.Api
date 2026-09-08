@@ -1,13 +1,12 @@
 ﻿using LibraryManagement.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace LibraryManagement.Api.Data;
 
 public class LibraryDbContext : DbContext
 {
     public LibraryDbContext(DbContextOptions<LibraryDbContext> options)
-    : base(options)
+        : base(options)
     {
     }
 
@@ -18,4 +17,21 @@ public class LibraryDbContext : DbContext
     public DbSet<Member> Members => Set<Member>();
 
     public DbSet<Borrowing> Borrowings => Set<Borrowing>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Category>()
+            .ToTable("categories");
+
+        modelBuilder.Entity<Book>()
+            .ToTable("books");
+
+        modelBuilder.Entity<Member>()
+            .ToTable("members");
+
+        modelBuilder.Entity<Borrowing>()
+            .ToTable("borrowings");
+    }
 }
