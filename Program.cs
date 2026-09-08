@@ -7,8 +7,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+        builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseSnakeCaseNamingConvention());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
