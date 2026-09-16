@@ -1,4 +1,5 @@
 ﻿using LibraryManagement.Api.Data;
+using LibraryManagement.Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,17 @@ public class BooksController : ControllerBase
     {
         var books = await _context.Books
             .Include(b => b.Category)
+            .Select(b => new BookDto
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                ISBN = b.ISBN,
+                CategoryId = b.CategoryId,
+                CategoryName = b.Category.Name,
+                TotalCount = b.TotalCount,
+                AvailableCount = b.AvailableCount
+            })
             .ToListAsync();
 
         return Ok(books);
