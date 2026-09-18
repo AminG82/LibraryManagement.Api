@@ -36,4 +36,29 @@ public class BooksController : ControllerBase
 
         return Ok(books);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var book = await _context.Books
+            .Include(b => b.Category)
+            .Where(b => b.Id == id)
+            .Select(b => new BookDto
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                ISBN = b.ISBN,
+                CategoryId = b.CategoryId,
+                CategoryName = b.Category.Name,
+                TotalCount = b.TotalCount,
+                AvailableCount = b.AvailableCount
+            })
+            .FirstOrDefaultAsync();
+
+        if (book == null)
+            return NotFound();
+
+        return Ok(book);
+    }
 }
