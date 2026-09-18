@@ -1,5 +1,6 @@
 ﻿using LibraryManagement.Api.Data;
 using LibraryManagement.Api.DTOs;
+using LibraryManagement.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,5 +61,35 @@ public class BooksController : ControllerBase
             return NotFound();
 
         return Ok(book);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateBookDto dto)
+    {
+        var categoryExists = await _context.Categories
+            .AnyAsync(c => c.Id == dto.CategoryId);
+
+        if (!categoryExists)
+            return BadRequest("Category does not exist.");
+
+        var book = new Book
+        {
+            Title = dto.Title,
+            Author = dto.Author,
+            ISBN = dto.ISBN,
+            CategoryId = dto.CategoryId,
+            TotalCount = dto.TotalCount,
+            AvailableCount = dto.TotalCount
+        };
+
+        _context.Books.Add(book);
+
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = book.Id },
+            book
+        );
     }
 }
