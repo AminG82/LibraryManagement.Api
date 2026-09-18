@@ -125,4 +125,27 @@ public class BooksController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var book = await _context.Books.FindAsync(id);
+
+        if (book == null)
+            return NotFound();
+
+        var hasBorrowings = await _context.Borrowings
+            .AnyAsync(b => b.BookId == id);
+
+        if (hasBorrowings)
+            return BadRequest(
+                "This book cannot be deleted because it has borrowing records."
+            );
+
+        _context.Books.Remove(book);
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
