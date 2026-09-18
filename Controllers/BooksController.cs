@@ -92,4 +92,37 @@ public class BooksController : ControllerBase
             book
         );
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, UpdateBookDto dto)
+    {
+        var book = await _context.Books.FindAsync(id);
+
+        if (book == null)
+            return NotFound();
+
+        var categoryExists = await _context.Categories
+            .AnyAsync(c => c.Id == dto.CategoryId);
+
+        if (!categoryExists)
+            return BadRequest("Category does not exist.");
+
+        var borrowedCount = book.TotalCount - book.AvailableCount;
+
+        if (dto.TotalCount < borrowedCount)
+            return BadRequest(
+                "Total count cannot be less than the number of borrowed copies."
+            );
+
+        book.Title = dto.Title;
+        book.Author = dto.Author;
+        book.ISBN = dto.ISBN;
+        book.CategoryId = dto.CategoryId;
+        book.TotalCount = dto.TotalCount;
+        book.AvailableCount = dto.TotalCount - borrowedCount;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

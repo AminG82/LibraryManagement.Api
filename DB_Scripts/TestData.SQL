@@ -23,3 +23,5 @@ JOIN books b
 JOIN members m
     ON br.member_id = m.id
 ORDER BY br.id;
+
+Select * FROM books;
