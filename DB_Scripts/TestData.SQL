@@ -25,3 +25,18 @@ JOIN members m
 ORDER BY br.id;
 
 Select * FROM books;
+
+SELECT * FROM books;
+
+SELECT * FROM borrowings;
+
+SELECT
+    Br.id ,
+    B.title ,
+    M.first_name ,
+    M.last_name
+FROM borrowings AS Br
+         LEFT JOIN books AS B
+                   ON br.book_id = B.id
+         LEFT JOIN members AS M
+                   ON Br.member_id = M.id;
