@@ -110,7 +110,7 @@ public class BorrowingsController : ControllerBase
         {
             BookId = dto.BookId,
             MemberId = dto.MemberId,
-            BorrowDate = DateTime.Today,
+            BorrowDate = DateTime.UtcNow,
             IsReturned = false
         };
 
@@ -121,11 +121,23 @@ public class BorrowingsController : ControllerBase
 
         await _context.SaveChangesAsync();
 
+        var result = new BorrowingDto
+        {
+            Id = borrowing.Id,
+            BookId = borrowing.BookId,
+            BookTitle = book.Title,
+            MemberId = borrowing.MemberId,
+            MemberName = member.FirstName + " " + member.LastName,
+            BorrowDate = borrowing.BorrowDate,
+            ReturnDate = borrowing.ReturnDate,
+            IsReturned = borrowing.IsReturned
+        };
+
         return CreatedAtAction(
             nameof(GetById),
             new { id = borrowing.Id },
-            borrowing
-        );
+            result
+            );
     }
 
     // PUT: api/Borrowings/1/return
@@ -145,7 +157,7 @@ public class BorrowingsController : ControllerBase
 
         // Mark as returned
         borrowing.IsReturned = true;
-        borrowing.ReturnDate = DateTime.Today;
+        borrowing.ReturnDate = DateTime.UtcNow;
 
         // Increase available copies
         borrowing.Book.AvailableCount++;
