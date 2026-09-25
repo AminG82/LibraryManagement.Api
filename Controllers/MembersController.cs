@@ -71,7 +71,8 @@ public class MembersController : ControllerBase
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             NationalCode = dto.NationalCode,
-            Phone = dto.Phone
+            Phone = dto.Phone,
+            RegisterDate = DateTime.UtcNow
         };
 
         _context.Members.Add(member);
