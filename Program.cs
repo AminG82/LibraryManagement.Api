@@ -1,5 +1,8 @@
+using DotNetEnv;
 using LibraryManagement.Api.Data;
 using Microsoft.EntityFrameworkCore;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +19,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "DB_CONNECTION_STRING was not found. Check your .env file.");
+}
+
 builder.Services.AddDbContext<LibraryDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(connectionString)
         .UseSnakeCaseNamingConvention());
 
 builder.Services.AddEndpointsApiExplorer();
